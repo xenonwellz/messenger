@@ -250,6 +250,7 @@ class MessageController extends Controller
 
     public function download($url)
     {
+        Gate::authorize('download', $url);
         if (!Storage::exists('public' . '/' . $url)) {
             return abort(404);
         }

@@ -9,6 +9,7 @@
   let noMoreMessage = false;
   let newMessageCount = 1;
   let maxFileSize = {{ config('messenger.max_file_size') }} * 1024;
+  let urlInitial = "/messenger/"
   let maxFileAtOnce = {{ config('messenger.max_file_at_once') }};
 
   // $(document).on('load', function() {
@@ -87,7 +88,7 @@
   function getConversations() {
     $.ajax({
       type: "post",
-      url: "/messenger/get-conversation",
+      url: urlInitial + "get-conversation",
       data: {
         "_token": csrf,
         "user": getConversationsCount
@@ -105,7 +106,7 @@
   function updateSearchConversation() {
     $.ajax({
       type: "post",
-      url: "/messenger/search-conversations",
+      url: urlInitial + "search-conversations",
       data: {
         "_token": csrf,
         "limit": searchCount,
@@ -151,7 +152,7 @@
 
     $.ajax({
       type: "post",
-      url: "messenger/messages",
+      url: urlInitial + "messages",
       data: {
         "_token": csrf,
         "user": user,
@@ -175,7 +176,7 @@
   function get_nav(user) {
     $.ajax({
       type: "post",
-      url: "messenger/messages-nav",
+      url: urlInitial + "messages-nav",
       data: {
         "_token": csrf,
         "user": user,
@@ -189,7 +190,7 @@
   function get_about(user) {
     $.ajax({
       type: "post",
-      url: "messenger/messages-about",
+      url: urlInitial + "messages-about",
       data: {
         "_token": csrf,
         "user": user,
@@ -206,7 +207,7 @@
       messageOffset += 10
       $.ajax({
         type: "post",
-        url: "messenger/messages",
+        url: urlInitial + "messages",
         data: {
           "_token": csrf,
           "user": $('#message-box').attr('data-id'),
@@ -277,7 +278,7 @@
 
       $.ajax({
         type: "post",
-        url: "/messenger/send",
+        url: urlInitial + "/send",
         data: {
           "_token": csrf,
           "text": text,
@@ -288,7 +289,7 @@
           $('#new-message-' + (newMessageCount - 1)).hide();
           $.ajax({
             type: "post",
-            url: "messenger/get-last",
+            url: urlInitial + "get-last",
             data: {
               "tz": new Date().getTimezoneOffset(),
               '_token': csrf,
@@ -337,14 +338,14 @@
         }
         $.ajax({
           type: "post",
-          url: "/messenger/send-files",
+          url: urlInitial + "send-files",
           data: formData,
           processData: false,
           contentType: false,
           success: function(response) {
             $.ajax({
               type: "post",
-              url: "messenger/get-last",
+              url: urlInitial + "get-last",
               data: {
                 "tz": new Date().getTimezoneOffset(),
                 '_token': csrf,
@@ -373,29 +374,35 @@
           }
         });
       } else {
-        //   new Swal("Warning!", '"'.files[i]['name'] +
-        //     '" was not uploaded because it was too large',
-        //     "warning");
-        // }
-        alert('not uploaded');
+        Swal.fire({
+          toast: true,
+          icon: 'warning',
+          position: 'bottom',
+          text: 'Some of your files were not uploaded because they were too large',
+          showConfirmButton: false,
+          timer: 2000
+        });
       }
-      $('#new-message-' + i).remove();
     }
+    $('#new-message-' + i).remove();
+  }
+  $('#message-file').val('');
+  $('#message-file').change();
+
+  }
+  }
+  else {
+    Swal.fire({
+      toast: true,
+      icon: 'error',
+      position: 'bottom',
+      title: 'No file uploaded',
+      showConfirmButton: false,
+      timer: 2000
+    })
     $('#message-file').val('');
     $('#message-file').change();
-
-    // }
-    // } else {
-    //   Swal.fire({
-    //     toast: true,
-    //     icon: 'error',
-    //     title: 'No file uploaded',
-    //     showConfirmButton: false,
-    //     timer: 2000
-    //   })
-    //   $('#message-file').val('');
-    //   $('#message-file').change();
-    // }
+  }
 
   }
 
@@ -425,7 +432,7 @@
   function get_online_users() {
     $.ajax({
       type: "post",
-      url: "/messenger/online-users",
+      url: urlInitial + "online-users",
       data: {
         "_token": csrf
       },
@@ -439,7 +446,7 @@
     user = $('#message-box').attr('data-id');
     $.ajax({
       type: "delete",
-      url: "/messenger/all/" + user,
+      url: urlInitial + "all/" + user,
       data: {
         '_token': csrf
       },

@@ -1,4 +1,4 @@
-<div class="inline-flex mb-2" id="received-{{ $message->id }}">
+<div class="inline-flex mb-2" id="received-{{ $message->id }}" oncontextmenu="showReceivedMenu({{ $message->id }})">
   <div class="received bg-blue-300 rounded-lg text-gray-700 px-2 text-sm py-1 max-w-65/100 cursor-pointer select-none">
     @if ($message->message)
       <span class=" whitespace-pre-wrap">{{ trim($message->message) }}</span>
