@@ -278,7 +278,7 @@
 
       $.ajax({
         type: "post",
-        url: urlInitial + "/send",
+        url: urlInitial + "send",
         data: {
           "_token": csrf,
           "text": text,
@@ -506,11 +506,35 @@
   }
 
   function deleteMessage() {
-
+    id = selectedMessageId;
+    $.ajax({
+      type: "delete",
+      url: urlInitial + 'messages/' + id,
+      data: {
+        '_token': csrf
+      },
+      success: function(response) {
+        let box = $('#' + selectedMessageType + '-' + selectedMessageId).remove();
+      }
+    });
+    hideMenu();
+    getConversations();
   }
 
   function unsendMessage() {
-
+    id = selectedMessageId;
+    $.ajax({
+      type: "delete",
+      url: urlInitial + 'messages/unsend/' + id,
+      data: {
+        '_token': csrf
+      },
+      success: function(response) {
+        let box = $('#' + selectedMessageType + '-' + selectedMessageId).remove();
+      }
+    });
+    hideMenu();
+    getConversations();
   }
 
   function hideMenu() {

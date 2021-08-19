@@ -1,20 +1,19 @@
 {
-    "name": "xenonwellz/messenger",
-    "description": "Laravel messaging system",
-    "type": "library",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "xenonwellz",
-            "email": "xenonwellz@gmail.com"
-        }
-    ],
-    "minimum-stability": "dev",
-    "require": {},
-    "autoload": {
-        "psr-4": {
-            "Xenonwellz\\Messenger\\": "src/",
-            "Xenonwellz\\Messenger\\Database\\Factories\\": "database/factories"
-        }
+  "name": "xenonwellz/messenger",
+  "description": "Laravel messaging system",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "xenonwellz",
+      "email": "xenonwellz@gmail.com"
     }
+  ],
+  "minimum-stability": "dev",
+  "require": {},
+  "autoload": {
+    "psr-4": {
+      "Xenonwellz\\Messenger\\": "src/"
+    }
+  }
 }

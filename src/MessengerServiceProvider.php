@@ -29,7 +29,7 @@ class MessengerServiceProvider extends ServiceProvider
             $this->loadMigrationsFrom(__DIR__ . '/database/migrations/exception');
         }
         $this->loadMigrationsFrom(__DIR__ . '/database/migrations/exception');
-        $this->mergeConfigFrom(__DIR__ . '/config/messenger.php', 'messenger');
+        // $this->mergeConfigFrom(__DIR__ . '/config/messenger.php', 'messenger');
     }
 
     public function register()
@@ -37,5 +37,6 @@ class MessengerServiceProvider extends ServiceProvider
         foreach (glob(__DIR__ . '/Helpers/*.php') as $helpersfilename) {
             require_once($helpersfilename);
         }
+        $this->app->register(MessengerEventServiceProvider::class);
     }
 }

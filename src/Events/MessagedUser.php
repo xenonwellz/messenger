@@ -11,7 +11,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class MessagedUser
+class MessagedUser implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -20,6 +20,8 @@ class MessagedUser
      *
      * @return void
      */
+    public $user;
+
     public function __construct(User $user)
     {
         $this->user = $user;
@@ -32,6 +34,6 @@ class MessagedUser
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('message');
+        return new Channel('message');
     }
 }

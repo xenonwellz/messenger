@@ -2,7 +2,7 @@
 <img src="
 @if (config('messenger.use_avatar_field') && $user[config('messenger.avatar_field_name')]) {{ $user[config('messenger.avatar_field_name')] }}
 @elseif (config('messenger.default_avatar'))
- @if (asset(config('messenger.default_avatar')))
+  @if (asset(config('messenger.default_avatar')))
 {{ asset(config('messenger.default_avatar')) }}
 @else {{ config('messenger.default_avatar') }} @endif
 @else
@@ -13,5 +13,9 @@ class="rounded-full p-1 pl-0 h-12">
 
 <div class="pb-1 pl-2">
   <b class="text-sm text-gray-800">{{ $user->name }}</b>
-  <p class="text-xs">Online</p>
+  <p class="text-xs">
+    @if ($user->online)
+      Online
+    @endif
+  </p>
 </div>

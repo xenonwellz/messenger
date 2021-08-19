@@ -270,11 +270,26 @@ class MessageController extends Controller
         }
         return Storage::download('public' . '/' . $url);
     }
-    public function unsend(Request $request)
+    public function unsend($id)
     {
+        $message = Message::find($id);
+        if ($message->sender_id == auth()->user()->id) {
+            $message->deleted_sender_at = Carbon::now()->format('Y-m-d H:i:s');
+            $message->deleted_other_at = Carbon::now()->format('Y-m-d H:i:s');
+        } else {
+            return abort(403);
+        }
+        return $message->save();
     }
 
-    public function delete(Request $request)
+    public function delete($id)
     {
+        $message = Message::find($id);
+        if ($message->sender_id == auth()->user()->id) {
+            $message->deleted_sender_at = Carbon::now()->format('Y-m-d H:i:s');
+        } else {
+            $message->deleted_other_at = Carbon::now()->format('Y-m-d H:i:s');
+        }
+        return $message->save();
     }
 }
