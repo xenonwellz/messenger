@@ -250,7 +250,21 @@ class MessageController extends Controller
 
     public function download($url)
     {
-        Gate::authorize('download', $url);
+        $file = "/" . $url;
+        $auth = auth()->user();
+        $count = Message::where(function ($query) use (&$auth, &$file) {
+            $query->where('attachment_path', $file)
+                ->where('sender_id', $auth->id);
+        })
+            ->orWhere(function ($query) use (&$auth, &$file) {
+                $query->where('attachment_path', $file)
+                    ->where('receiver_id', $auth->id);
+            })
+            ->count();
+        if ($count == 0) {
+            return abort(403);
+        }
+
         if (!Storage::exists('public' . '/' . $url)) {
             return abort(404);
         }

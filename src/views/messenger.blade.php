@@ -37,5 +37,5 @@
     <div class="h-full w-full flex items-center justify-center text-gray-400">No user Selected</div>
   </div>
 </div>
-
+@include('messenger::components.message.message-menu')
 @include('messenger::components.footer')

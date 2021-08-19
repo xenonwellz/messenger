@@ -369,7 +369,14 @@
             if (response['errors']['files'][0]) {
               new Swal('Oops', response['errors']['files'][0], 'error')
             } else {
-              new Swal('Oops', "There was an error uploading your file", 'error')
+              Swal.fire({
+                toast: true,
+                icon: 'error',
+                position: 'bottom',
+                text: 'There was an error uploading some of your files',
+                showConfirmButton: false,
+                timer: 2000
+              });
             }
           }
         });
@@ -382,28 +389,11 @@
           showConfirmButton: false,
           timer: 2000
         });
+        $('#new-message-' + i).remove();
       }
     }
-    $('#new-message-' + i).remove();
-  }
-  $('#message-file').val('');
-  $('#message-file').change();
-
-  }
-  }
-  else {
-    Swal.fire({
-      toast: true,
-      icon: 'error',
-      position: 'bottom',
-      title: 'No file uploaded',
-      showConfirmButton: false,
-      timer: 2000
-    })
     $('#message-file').val('');
     $('#message-file').change();
-  }
-
   }
 
   $('#message-file').change(function() {
@@ -454,5 +444,85 @@
         get_messages(user);
       }
     });
+  }
+
+  $("body").on("click", "[data-zoom]", function() {
+    zoomed = $(this).attr('data-zoom') == 1;
+    if (zoomed) {
+      $('#full-overlay').addClass('hidden');
+      $(this).attr('data-zoom', 0)
+      this.style.width = "250px"
+      this.style.height = "250px"
+      this.style.zIndex = 1
+      this.style.objectFit = "cover"
+      $(this).removeClass('fixed top-0 left-0 max-h-full block')
+    } else {
+      $('#full-overlay').removeClass('hidden');
+      $(this).attr('data-zoom', 1)
+      this.style.width = "95%"
+      this.style.height = "95%"
+      this.style.objectFit = "contain"
+      this.style.zIndex = 100
+      $(this).addClass('fixed top-0 left-0 max-h-full block')
+      Swal.fire({
+        toast: true,
+        position: 'bottom',
+        text: 'Click image to close',
+        showConfirmButton: false,
+        timer: 800
+      });
+    }
+  });
+
+  function showSentMenu(id) {
+    selectedMessageId = id
+    selectedMessageType = "sent"
+    if ($('#sent-' + id).find('.sent-message-text').length < 1) {
+      $("#menu-copy-btn").hide();
+    } else {
+      $("#menu-download-btn").hide();
+    }
+    $('#message-menu').removeClass('hidden')
+  }
+
+  function showReceivedMenu(id) {
+    selectedMessageId = id
+    selectedMessageType = "received"
+    $("#menu-unsend-btn").hide();
+    if ($('#received-' + id).find('.received-message-text').length < 1) {
+      $("#menu-copy-btn").hide();
+    } else {
+      $("#menu-download-btn").hide();
+    }
+    $('#message-menu').removeClass('hidden');
+  }
+
+  function copyMessage() {
+    let text = $('#' + selectedMessageType + '-' + selectedMessageId).find('.' + selectedMessageType + '-message-text')
+      .text();
+    element = document.createElement('span');
+    navigator.clipboard.writeText(text);
+    hideMenu();
+  }
+
+  function deleteMessage() {
+
+  }
+
+  function unsendMessage() {
+
+  }
+
+  function hideMenu() {
+    $("#menu-copy-btn").show();
+    $("#menu-download-btn").show();
+    $("#menu-unsend-btn").show();
+    $('#message-menu').addClass('hidden');
+  }
+
+  function downloadAttachment() {
+    src = $('#' + selectedMessageType + '-' + selectedMessageId).find('[data-src]').attr('data-src');
+    window.open(urlInitial + 'download' + src, '_blank');
+    hideMenu();
   }
 </script>

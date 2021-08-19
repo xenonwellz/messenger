@@ -1,13 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Storage;
 use Xenonwellz\Messenger\Http\Controllers\MessageController;
 
-
 Route::prefix('messenger')->middleware('web', 'auth')->group(function () {
-    //
-
     Route::get('/', function () {
         return view('messenger::messenger');
     });

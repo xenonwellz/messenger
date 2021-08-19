@@ -16,8 +16,8 @@ return [
 
     // Maximum file size in Kilobytes (must be less than php.ini specified)
     'max_file_size' => '1024',
-    'max_file_at_once' => '5',
 
+    'max_file_at_once' => 5,
     'file_storage_path' => '/message-attachment/'
 
 
