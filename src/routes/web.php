@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Broadcast;
 use Xenonwellz\Messenger\Http\Controllers\MessageController;
 
 Route::prefix('messenger')->middleware('web', 'auth')->group(function () {

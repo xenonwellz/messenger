@@ -34,6 +34,11 @@ class MessagedUser implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new Channel('message');
+        return new PrivateChannel('message');
+    }
+
+    public function broadcastAs()
+    {
+        return 'messenger';
     }
 }

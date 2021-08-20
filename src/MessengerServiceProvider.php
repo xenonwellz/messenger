@@ -23,13 +23,14 @@ class MessengerServiceProvider extends ServiceProvider
 
         $this->registerPolicies();
         $this->loadRoutesFrom(__DIR__ . '/routes/web.php');
+        $this->loadRoutesFrom(__DIR__ . '/routes/channels.php');
         $this->loadViewsFrom(__DIR__ . '/views', 'messenger');
         $this->loadMigrationsFrom(__DIR__ . '/database/migrations/main');
         if (config('messenger.use_avatar_field')) {
             $this->loadMigrationsFrom(__DIR__ . '/database/migrations/exception');
         }
         $this->loadMigrationsFrom(__DIR__ . '/database/migrations/exception');
-        // $this->mergeConfigFrom(__DIR__ . '/config/messenger.php', 'messenger');
+        $this->mergeConfigFrom(__DIR__ . '/config/messenger.php', 'messenger');
     }
 
     public function register()
