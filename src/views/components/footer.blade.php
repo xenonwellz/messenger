@@ -7,6 +7,7 @@
 <script src="/cdn/sweetalert/sweetalert.min.js"></script>
 @include('messenger::components.js.js')
 <script>
+  const userId = {{ auth()->user()->id }};
   window.Echo = new Echo({
     broadcaster: 'pusher',
     key: "{{ env('PUSHER_APP_KEY') }}",
@@ -20,6 +21,51 @@
     .listen('.messenger', (e) => {
       console.log(e);
     });
+
+  window.Echo.private('message')
+    .listenForWhisper('.typing', (e) => {
+      console.log(e);
+    });
+
+  function isTyping() {
+    setTimeout(function() {
+      window.Echo.private('message').whisper('typing', {
+        user: userId,
+        typing: true
+      });
+    }, 300);
+  }
+
+  let typingTimer;
+  Echo.private('message')
+    .listenForWhisper('typing', (e) => {
+      if (e.typing) {
+        $('#conversation-text-' + e.user).addClass('hidden')
+        $('#conversation-typing-' + e.user).removeClass('hidden')
+        if (e.user == $('#message-box').attr('data-id')) {
+          $("#message-box-online").addClass('hidden')
+          $("#message-box-typing").removeClass('hidden')
+        }
+      } else {
+        $('#conversation-text-' + e.user).removeClass('hidden')
+        $('#conversation-typing-' + e.user).addClass('hidden')
+        if (e.user == $('#message-box').attr('data-id')) {
+          // $("#message-box-online").addClass('hidden')
+          $("#message-box-typing").addClass('hidden');
+        }
+      }
+      clearTimeout(typingTimer);
+      typingTimer = setTimeout(function() {
+        window.Echo.private('message').whisper('typing', {
+          user: userId,
+          typing: false
+        });
+      }, 900);
+    });
+
+  $('#message-input').on('keyup', function() {
+    isTyping();
+  })
 </script>
 </body>
 

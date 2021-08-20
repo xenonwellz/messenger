@@ -15,6 +15,7 @@
   // $(document).on('load', function() {
   getConversations();
   $('#search-input').val('');
+  get_online_users();
   // });
   //  ______________________
   // |                     |
@@ -549,4 +550,18 @@
     window.open(urlInitial + 'download' + src, '_blank');
     hideMenu();
   }
+
+  Echo.join('message')
+    .joining((user) => {
+      $.ajax({
+        type: "PUT",
+        url: "/messenger/conversation/" + user,
+        data: {
+          "_token": csrf
+        },
+        success: function(response) {
+
+        }
+      });
+    });
 </script>

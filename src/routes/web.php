@@ -8,6 +8,8 @@ Route::prefix('messenger')->middleware('web', 'auth')->group(function () {
     Route::get('/', function () {
         return view('messenger::messenger');
     });
+    Route::get('/download/{url}', [MessageController::class, 'download'])->where(['url' => "[\w\/ . -]+"]);
+
     Route::post('/search-conversations', [MessageController::class, 'search']);
     Route::post('/get-conversation', [MessageController::class, 'get']);
     Route::post('/messages', [MessageController::class, 'index']);
@@ -18,10 +20,11 @@ Route::prefix('messenger')->middleware('web', 'auth')->group(function () {
     Route::post('/online-users',  [MessageController::class, 'online']);
     Route::post('/get-last',  [MessageController::class, 'getLast']);
 
+    Route::put('/conversation/{user}', [MessageController::class, 'getLast']);
+
     Route::delete('/messages/{id}', [MessageController::class, 'delete']);
     Route::delete('/messages/unsend/{id}', [MessageController::class, 'unsend']);
     Route::delete('/all/{id}',  [MessageController::class, 'deleteAll']);
 
-    Route::get('/download/{url}', [MessageController::class, 'download'])->where(['url' => "[\w\/ . -]+"]);
     //
 });

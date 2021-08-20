@@ -3,7 +3,7 @@
 return [
 
     // Always add toQuery if using collections
-    // "allow_conversation_with" => \App\Models\User::all()->toQuery(),
+    "allow_conversation_with" => \App\Models\User::all()->toQuery(),
 
     "use_avatar_field" => true,
     "avatar_field_name" => 'avatar',
