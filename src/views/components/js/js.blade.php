@@ -1,17 +1,4 @@
 <script>
-  let csrf = "{{ csrf_token() }}";
-  let increaseSearchCount = true;
-  let increaseGetConversatinCount = true;
-  let getConversationsCount = 10;
-  let messageOffset = 0;
-  let searchCount = 10;
-  let message_scroll_wait = false;
-  let noMoreMessage = false;
-  let newMessageCount = 1;
-  let maxFileSize = {{ config('messenger.max_file_size') }} * 1024;
-  let urlInitial = "/messenger/"
-  let maxFileAtOnce = {{ config('messenger.max_file_at_once') }};
-
   // $(document).on('load', function() {
   getConversations();
   $('#search-input').val('');
@@ -158,7 +145,7 @@
         "_token": csrf,
         "user": user,
         "offset": "0",
-        "tz": new Date().getTimezoneOffset(),
+        "tz": tz,
         "limit": 20
 
       },
@@ -213,7 +200,7 @@
           "_token": csrf,
           "user": $('#message-box').attr('data-id'),
           "offset": messageOffset,
-          "tz": new Date().getTimezoneOffset(),
+          "tz": tz,
           "limit": 20
         },
         success: function(response) {
@@ -292,7 +279,7 @@
             type: "post",
             url: urlInitial + "get-last",
             data: {
-              "tz": new Date().getTimezoneOffset(),
+              "tz": tz,
               '_token': csrf,
             },
             success: function(response) {
@@ -348,7 +335,7 @@
               type: "post",
               url: urlInitial + "get-last",
               data: {
-                "tz": new Date().getTimezoneOffset(),
+                "tz": tz,
                 '_token': csrf,
               },
               success: function(response) {
@@ -551,17 +538,169 @@
     hideMenu();
   }
 
-  Echo.join('message')
+  window.Echo.private('message')
+    .listen('.messenger', (e) => {
+      console.log(e);
+    });
+
+  window.Echo.private('message')
+    .listenForWhisper('.typing', (e) => {
+      console.log(e);
+    });
+
+  function isTyping() {
+    setTimeout(function() {
+      window.Echo.private('message').whisper('typing', {
+        user: userId,
+        typing: true
+      });
+      stoppedTyping();
+    }, 300);
+  }
+
+  function stoppedTyping() {
+    clearTimeout(typingTimer);
+    typingTimer = setTimeout(function() {
+      window.Echo.private('message').whisper('typing', {
+        user: userId,
+        typing: false
+      });
+    }, 900);
+  }
+
+  Echo.private('message')
+    .listenForWhisper('typing', (e) => {
+      if (e.typing) {
+        $('#conversation-text-' + e.user).addClass('hidden')
+        $('#conversation-typing-' + e.user).removeClass('hidden')
+        if (e.user == $('#message-box').attr('data-id')) {
+          $("#message-box-online").addClass('hidden')
+          $("#message-box-typing").removeClass('hidden')
+        }
+      } else {
+        $('#conversation-text-' + e.user).removeClass('hidden')
+        $('#conversation-typing-' + e.user).addClass('hidden')
+        if (e.user == $('#message-box').attr('data-id')) {
+          $("#message-box-online").removeClass('hidden')
+          $("#message-box-typing").addClass('hidden');
+        }
+      }
+    })
+    .listen('.delivered-message', function(e) {
+      if ($('#message-box').attr('data-id') == e.id) {
+        markAsDelivered();
+      }
+    })
+    .listen('.read-message', function(e) {
+      if ($('#message-box').attr('data-id') == e.from && userId == e.to) {
+        markAsRead();
+      }
+    })
+    .listen('.new-message', function(e) {
+      if ($('#message-box').attr('data-id') == e.from && userId == e.to && !message_container.hasClass('hidden')) {
+        newMessage(e.from)
+      } else if (userId == e.to) {
+        getConversations();
+      }
+    })
+
+  $('#message-input').on('keyup', function() {
+    if ($(this).val().trim() != "") {
+      isTyping();
+    }
+  })
+
+  Echo.join('online')
     .joining((user) => {
       $.ajax({
         type: "PUT",
-        url: "/messenger/conversation/" + user,
+        url: urlInitial + "user/" + user.id + '/' + 1,
         data: {
           "_token": csrf
         },
         success: function(response) {
-
+          updateMessageable(response.id);
         }
-      });
-    });
+      })
+    })
+    .leaving((user) => {
+      $.ajax({
+        type: "PUT",
+        url: urlInitial + "user/" + user.id + '/' + 0,
+        data: {
+          "_token": csrf
+        },
+        success: function(response) {
+          if ($('#recent-users-container').find("#conversation-" + response.id).length > 0) {
+            getConversations();
+            get_online_users();
+            get_nav(response.id);
+          }
+        }
+      })
+    })
+
+  function updateMessageable(user) {
+    $.ajax({
+      type: "POST",
+      url: urlInitial + "friend/",
+      data: {
+        "_token": csrf,
+        "id": user
+      },
+      success: function(response) {
+        if (response == 1) {
+          getConversations();
+          get_online_users();
+          get_nav(user);
+        }
+      }
+    })
+  }
+
+  function markAsDelivered() {
+    $(".bi-check").each(function() {
+      $(this).removeClass("bi-check")
+      $(this).addClass("bi-check-all")
+    })
+  }
+
+  function markAsRead() {
+    $(".bi-check").each(function() {
+      $(this).removeClass("bi-check")
+      $(this).addClass("bi-check-all text-green-900")
+    })
+    $(".bi-check-all").each(function() {
+      $(this).removeClass("bi-check-all")
+      $(this).addClass("bi-check-all text-green-900")
+    })
+  }
+
+  function newMessage(user) {
+    $.ajax({
+      type: "POST",
+      url: urlInitial + "get-last-received",
+      data: {
+        "_token": csrf,
+        "id": user,
+        "tz": tz,
+      },
+      success: function(response) {
+        if ($('#message-box').scrollTop() + $('#message-box')[0].offsetHeight >= $('#message-box')[0]
+          .scrollHeight) {
+          $('#message-box').append(response);
+          $('#message-box').scrollTop($('#message-box')[0].scrollHeight)
+        } else {
+          $('#message-box').append(response);
+          Swal.fire({
+            toast: true,
+            position: 'bottom',
+            text: 'New Message',
+            showConfirmButton: false,
+            timer: 2000
+          });
+        }
+      }
+    })
+  }
 </script>

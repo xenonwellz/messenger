@@ -5,11 +5,14 @@ namespace Xenonwellz\Messenger\Http\Controllers;
 use Carbon\Carbon;
 use App\Models\User;
 
+use Xenonwellz\Messenger\Events\ReadMessage;
 use Illuminate\Http\Request;
+use Xenonwellz\Messenger\Events\DeliveredMessage;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Xenonwellz\Messenger\Models\Message;
+use Xenonwellz\Messenger\Events\NewMessage;
 
 class MessageController extends Controller
 {
@@ -140,6 +143,7 @@ class MessageController extends Controller
         }
 
         $this->markAsDelivered();
+        $this->updateOnline(auth()->user()->id, 1);
 
         return view('messenger::components.structure.conversation')->with([
             'users' => $users
@@ -152,6 +156,8 @@ class MessageController extends Controller
             ->where('receiver_id', auth()->user()->id)
             ->where('read_at', null)
             ->update(['read_at' => Carbon::now()->format('Y-m-d H:i:s')]);
+
+        broadcast(new ReadMessage(User::find($user_id)))->toOthers();
     }
 
     public function markAsDelivered()
@@ -159,6 +165,8 @@ class MessageController extends Controller
         Message::where('receiver_id', auth()->user()->id)
             ->where('delivered_at', null)
             ->update(['delivered_at' => Carbon::now()->format('Y-m-d H:i:s')]);
+
+        broadcast(new DeliveredMessage(User::find(auth()->user()->id)))->toOthers();
     }
 
     public function send(Request $request)
@@ -172,11 +180,17 @@ class MessageController extends Controller
 
         Gate::authorize('message', $to);
 
-        Message::create([
+        $message = Message::create([
             'sender_id' => auth()->user()->id,
             'receiver_id' => $request->to,
             'message' => $request->text
         ]);
+
+        if ($to->online) {
+            $message->delivered_at = Carbon::now()->format('Y-m-d H:i:s');
+            $message->save();
+        }
+        broadcast(new NewMessage($to))->toOthers();
     }
 
     public function online()
@@ -233,18 +247,26 @@ class MessageController extends Controller
             'mimes' => 'The uploaded file "' . $request->file('files')->getClientOriginalName() . '" is invalid.',
         ]);
 
-        Gate::authorize('message', User::find($request->to));
+        $to = User::find($request->to);
+
+        Gate::authorize('message', $to);
         $file = $request->file('files');
         $name = md5($file->getClientOriginalName() . time()) . '.' . $file->extension();
 
         Storage::put('public' . config('messenger.file_storage_path') . $name, file_get_contents($file), 'public');
 
-        Message::create([
+        $message = Message::create([
             'sender_id' => auth()->user()->id,
             'receiver_id' => $request->to,
             'attachment_path' => config('messenger.file_storage_path') . $name
         ]);
 
+        if ($to->online) {
+            $message->delivered_at = Carbon::now()->format('Y-m-d H:i:s');
+            $message->save();
+        }
+
+        broadcast(new NewMessage($to))->toOthers();
         return 'File sent successfully';
     }
 
@@ -291,5 +313,50 @@ class MessageController extends Controller
             $message->deleted_other_at = Carbon::now()->format('Y-m-d H:i:s');
         }
         return $message->save();
+    }
+
+    public function updateOnline($id, $status)
+    {
+        $user = User::find($id);
+        if ($status == 1) {
+            $user->online = 1;
+        } else if ($status == 0) {
+            $user->online = null;
+        } else {
+            return abort(404);
+        }
+        $user->save();
+        return $user;
+    }
+
+    public function received(Request $request)
+    {
+        $request->validate([
+            'tz' => 'required|integer',
+            'id' => 'required'
+        ]);
+
+        $messages = Message::where('sender_id', $request->id)->orderBy('created_at', 'desc')->first();
+
+        $messages->delivered_at = Carbon::now()->format('Y-m-d H:i:s');
+        $messages->read_at = Carbon::now()->format('Y-m-d H:i:s');
+
+        $messages->save();
+
+        broadcast(new ReadMessage(User::find($messages->receiver_id)))->toOthers();
+
+        return view('messenger::components.message.received')->with([
+            'message' => $messages,
+            'tz' => $request->tz
+        ]);
+    }
+
+    public function friend(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|integer'
+        ]);
+
+        return Gate::check('message', User::find($request->id));
     }
 }

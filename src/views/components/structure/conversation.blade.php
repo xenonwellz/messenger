@@ -1,12 +1,12 @@
 @foreach ($users as $conversation)
-  <div class="bg-gray-200 rounded-md w-full flex mb-2 cursor-pointer" id="conversation"
-    onclick="showMessageContainer({{ $conversation->id }})">
+  <div class="bg-gray-200 rounded-md w-full relative flex mb-2 cursor-pointer"
+    id="conversation-{{ $conversation->id }}" onclick="showMessageContainer({{ $conversation->id }})">
     <div class=" relative flex items-center justify-center flex-shrink-0">
       <img src="
     @if (config('messenger.use_avatar_field') &&
         $conversation[config('messenger.avatar_field_name')]) {{ $conversation[config('messenger.avatar_field_name')] }}
 @elseif (config('messenger.default_avatar'))
-                                           @if (asset(config('messenger.default_avatar')))
+                                               @if (asset(config('messenger.default_avatar')))
       {{ asset(config('messenger.default_avatar')) }}
     @else {{ config('messenger.default_avatar') }} @endif
     @else
@@ -36,7 +36,7 @@
           if ($message->count() >= 100) {
               echo '99+';
           } elseif ($message->count() > 0) {
-              echo '<small class="h-4 px-1 bg-red-700 text-white rounded-full font-bold transform">' . $message->count() . '</small>';
+              echo '<small class="h-4 px-1 bg-red-700 text-white rounded-full font-bold transform absolute bottom-2">' . $message->count() . '</small>';
           }
         @endphp
       </span>

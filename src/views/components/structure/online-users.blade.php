@@ -1,9 +1,10 @@
 @foreach ($users as $user)
-  <span class="mr-1 active_user relative flex-shrink-0 cursor-pointer" onclick="showMessageContainer('1')">
+  <span class="mr-1 active_user relative flex-shrink-0 cursor-pointer" onclick="showMessageContainer('1')"
+    id="oline-user-{{ $user->id }}">
     <img src="
     @if (config('messenger.use_avatar_field') && $user[config('messenger.avatar_field_name')]) {{ $user[config('messenger.avatar_field_name')] }}
 @elseif (config('messenger.default_avatar'))
-               @if (asset(config('messenger.default_avatar')))
+                @if (asset(config('messenger.default_avatar')))
     {{ asset(config('messenger.default_avatar')) }}
   @else {{ config('messenger.default_avatar') }} @endif
   @else

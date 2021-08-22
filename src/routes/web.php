@@ -13,14 +13,16 @@ Route::prefix('messenger')->middleware('web', 'auth')->group(function () {
     Route::post('/search-conversations', [MessageController::class, 'search']);
     Route::post('/get-conversation', [MessageController::class, 'get']);
     Route::post('/messages', [MessageController::class, 'index']);
+    Route::post('/get-last-received', [MessageController::class, 'received']);
     Route::post('/messages-nav',  [MessageController::class, 'nav']);
     Route::post('/messages-about',  [MessageController::class, 'about']);
     Route::post('/send',  [MessageController::class, 'send']);
     Route::post('/send-files',  [MessageController::class, 'sendFile']);
     Route::post('/online-users',  [MessageController::class, 'online']);
     Route::post('/get-last',  [MessageController::class, 'getLast']);
+    Route::post('/friend',  [MessageController::class, 'friend']);
 
-    Route::put('/conversation/{user}', [MessageController::class, 'getLast']);
+    Route::put('/user/{id}/{status}', [MessageController::class, 'updateOnline']);
 
     Route::delete('/messages/{id}', [MessageController::class, 'delete']);
     Route::delete('/messages/unsend/{id}', [MessageController::class, 'unsend']);

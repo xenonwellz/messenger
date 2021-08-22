@@ -5,9 +5,23 @@
 <script src="/cdn/echo/echo.js"></script>
 <script src="/cdn/pusher/pusher.min.js"></script>
 <script src="/cdn/sweetalert/sweetalert.min.js"></script>
-@include('messenger::components.js.js')
 <script>
+  let csrf = "{{ csrf_token() }}";
+  let increaseSearchCount = true;
+  let increaseGetConversatinCount = true;
+  let getConversationsCount = 10;
+  let messageOffset = 0;
+  let searchCount = 10;
+  let message_scroll_wait = false;
+  let noMoreMessage = false;
+  let newMessageCount = 1;
+  let maxFileSize = {{ config('messenger.max_file_size') }} * 1024;
+  let urlInitial = "/messenger/"
+  let maxFileAtOnce = {{ config('messenger.max_file_at_once') }};
   const userId = {{ auth()->user()->id }};
+  let typingTimer;
+  let tz = new Date().getTimezoneOffset();
+
   window.Echo = new Echo({
     broadcaster: 'pusher',
     key: "{{ env('PUSHER_APP_KEY') }}",
@@ -16,57 +30,8 @@
     wsHost: window.location.hostname,
     wsPort: 6001,
   });
-
-  window.Echo.private('message')
-    .listen('.messenger', (e) => {
-      console.log(e);
-    });
-
-  window.Echo.private('message')
-    .listenForWhisper('.typing', (e) => {
-      console.log(e);
-    });
-
-  function isTyping() {
-    setTimeout(function() {
-      window.Echo.private('message').whisper('typing', {
-        user: userId,
-        typing: true
-      });
-    }, 300);
-  }
-
-  let typingTimer;
-  Echo.private('message')
-    .listenForWhisper('typing', (e) => {
-      if (e.typing) {
-        $('#conversation-text-' + e.user).addClass('hidden')
-        $('#conversation-typing-' + e.user).removeClass('hidden')
-        if (e.user == $('#message-box').attr('data-id')) {
-          $("#message-box-online").addClass('hidden')
-          $("#message-box-typing").removeClass('hidden')
-        }
-      } else {
-        $('#conversation-text-' + e.user).removeClass('hidden')
-        $('#conversation-typing-' + e.user).addClass('hidden')
-        if (e.user == $('#message-box').attr('data-id')) {
-          // $("#message-box-online").addClass('hidden')
-          $("#message-box-typing").addClass('hidden');
-        }
-      }
-      clearTimeout(typingTimer);
-      typingTimer = setTimeout(function() {
-        window.Echo.private('message').whisper('typing', {
-          user: userId,
-          typing: false
-        });
-      }, 900);
-    });
-
-  $('#message-input').on('keyup', function() {
-    isTyping();
-  })
 </script>
+@include('messenger::components.js.js')
 </body>
 
 </html>

@@ -17,8 +17,15 @@ return [
     // Maximum file size in Kilobytes (must be less than php.ini specified)
     'max_file_size' => 1024,
 
+    //max file to be sent at once
     'max_file_at_once' => 5,
-    'file_storage_path' => "/message-attachment/"
+
+    'file_storage_path' => "/message-attachment/",
+
+    //use pusher or laravel websockets
+    'websocket_provider' => "laravel-websockets",
+
+    'route' => 'messenger'
 
 
 ];

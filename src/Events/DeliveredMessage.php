@@ -11,7 +11,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class MessagedUser implements ShouldBroadcast
+class DeliveredMessage implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -39,6 +39,11 @@ class MessagedUser implements ShouldBroadcast
 
     public function broadcastAs()
     {
-        return 'messenger';
+        return 'delivered-message';
+    }
+
+    public function broadcastWith()
+    {
+        return ["id" => $this->user->id];
     }
 }
