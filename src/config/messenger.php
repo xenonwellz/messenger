@@ -25,7 +25,7 @@ return [
     //use pusher or laravel websockets
     'websocket_provider' => "laravel-websockets",
 
-    'route' => 'messenger'
+    'route_prefix' => 'messenger'
 
 
 ];

@@ -3,6 +3,7 @@
 namespace Xenonwellz\Messenger;
 
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
 class MessengerServiceProvider extends ServiceProvider
@@ -20,10 +21,9 @@ class MessengerServiceProvider extends ServiceProvider
     }
     public function boot()
     {
-
+        dd(config('messenger.route_prefix'));
         $this->registerPolicies();
-        $this->loadRoutesFrom(__DIR__ . '/routes/web.php');
-        $this->loadRoutesFrom(__DIR__ . '/routes/channels.php');
+        $this->loadRoutes();
         $this->loadViewsFrom(__DIR__ . '/views', 'messenger');
         $this->loadMigrationsFrom(__DIR__ . '/database/migrations/main');
         if (config('messenger.use_avatar_field')) {
@@ -39,5 +39,21 @@ class MessengerServiceProvider extends ServiceProvider
             require_once($helpersfilename);
         }
         $this->app->register(MessengerEventServiceProvider::class);
+    }
+
+    protected function loadRoutes()
+    {
+        Route::group($this->routeConfigure(), function () {
+            $this->loadRoutesFrom(__DIR__ . '/routes/web.php');
+        });
+        $this->loadRoutesFrom(__DIR__ . '/routes/channels.php');
+    }
+
+    private function routeConfigure()
+    {
+        return [
+            'prefix' => "messenger",
+            'middleware' => ['web', 'auth']
+        ];
     }
 }

@@ -22,14 +22,18 @@
   let typingTimer;
   let tz = new Date().getTimezoneOffset();
 
-  window.Echo = new Echo({
+  @if (config('messenger.websocket_provider') == 'pusher')
+  
+  @else
+    window.Echo = new Echo({
     broadcaster: 'pusher',
     key: "{{ env('PUSHER_APP_KEY') }}",
     cluster: "{{ env('PUSHER_APP_CLUSTER') }}",
     forceTLS: false,
     wsHost: window.location.hostname,
     wsPort: 6001,
-  });
+    });
+  @endif
 </script>
 @include('messenger::components.js.js')
 </body>
