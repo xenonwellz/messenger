@@ -38,7 +38,7 @@ Publish the assets by running
 
  After runing the 
  `php artisan migrate`
- command, uncomment the
+ command, you must register at least 2 users and uncomment the
  `allow_conversation_with`
  field in the config.
 
