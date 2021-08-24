@@ -21,16 +21,45 @@ class MessengerServiceProvider extends ServiceProvider
     }
     public function boot()
     {
-        dd(config('messenger.route_prefix'));
+        $this->mergeConfigFrom(__DIR__ . '/config/messenger.php', 'messenger');
         $this->registerPolicies();
         $this->loadRoutes();
         $this->loadViewsFrom(__DIR__ . '/views', 'messenger');
         $this->loadMigrationsFrom(__DIR__ . '/database/migrations/main');
-        if (config('messenger.use_avatar_field')) {
-            $this->loadMigrationsFrom(__DIR__ . '/database/migrations/exception');
-        }
         $this->loadMigrationsFrom(__DIR__ . '/database/migrations/exception');
-        $this->mergeConfigFrom(__DIR__ . '/config/messenger.php', 'messenger');
+        $this->loadMigrationsFrom(__DIR__ . '/database/migrations/exception');
+        $this->publishes([
+            __DIR__ . '/config/messenger.php' => config_path('messenger.php')
+        ], 'messenger-config');
+
+        // Migrations
+        $this->publishes([
+            __DIR__ . '/database/migrations/' => database_path('migrations')
+        ], 'messenger-migrations');
+
+        // Models
+        $isV8 = explode('.', app()->version())[0] >= 8;
+        $this->publishes([
+            __DIR__ . '/Models' => app_path($isV8 ? 'Models' : '')
+        ], 'messenger-models');
+
+        // Controllers
+        $this->publishes([
+            __DIR__ . '/Http/Controllers' => app_path('Http/Controllers/vendor/messenger')
+        ], 'messenger-controllers');
+
+        // Views
+        $this->publishes([
+            __DIR__ . '/views' => resource_path('views/vendor/messenger')
+        ], 'messenger-views');
+
+        // Assets
+        $this->publishes([
+            // CSS
+            __DIR__ . '/assets/css' => public_path('css/messenger'),
+            // JavaScript
+            __DIR__ . '/assets/js' => public_path('js/messenger'),
+        ], 'messenger-assets');
     }
 
     public function register()
@@ -52,7 +81,7 @@ class MessengerServiceProvider extends ServiceProvider
     private function routeConfigure()
     {
         return [
-            'prefix' => "messenger",
+            'prefix' => config('messenger.route_prefix'),
             'middleware' => ['web', 'auth']
         ];
     }

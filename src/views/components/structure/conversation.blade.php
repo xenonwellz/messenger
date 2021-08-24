@@ -3,14 +3,15 @@
     id="conversation-{{ $conversation->id }}" onclick="showMessageContainer({{ $conversation->id }})">
     <div class=" relative flex items-center justify-center flex-shrink-0">
       <img src="
-    @if (config('messenger.use_avatar_field') &&
-        $conversation[config('messenger.avatar_field_name')]) {{ $conversation[config('messenger.avatar_field_name')] }}
-@elseif (config('messenger.default_avatar'))
-                                               @if (asset(config('messenger.default_avatar')))
-      {{ asset(config('messenger.default_avatar')) }}
-    @else {{ config('messenger.default_avatar') }} @endif
+     @if (config('messenger.use_avatar_field') &&
+        $conversation[config('messenger.avatar_field_name')])
+      {{ $conversation[config('messenger.avatar_field_name')] }}
+    @elseif (config('messenger.default_avatar'))
+      @if (asset(config('messenger.default_avatar')))
+        {{ asset(config('messenger.default_avatar')) }}
+      @else {{ config('messenger.default_avatar') }} @endif
     @else
-      https://ui-avatars.com/api/?background=random&name={{ str_replace(' ', '+', trim($conversation->name)) }}
+      https://ui-avatars.com/api/?background=5f5ff8&name={{ str_replace(' ', '+', trim($conversation->name)) }}
       @endif " alt="
       {{ $conversation->name }}"
 
