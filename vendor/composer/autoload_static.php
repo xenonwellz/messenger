@@ -9,12 +9,12 @@ class ComposerStaticInite425464f0756bba1c2f0f5c020c50716
     public static $prefixLengthsPsr4 = array (
         'X' => 
         array (
-            'Xenonwellz\\Messenger\\' => 21,
+            'Xenonwellz\\Messenger\\MessengerServiceProvider\\' => 46,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'Xenonwellz\\Messenger\\' => 
+        'Xenonwellz\\Messenger\\MessengerServiceProvider\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src',
         ),

@@ -6,5 +6,5 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Xenonwellz\\Messenger\\' => array($baseDir . '/src'),
+    'Xenonwellz\\Messenger\\MessengerServiceProvider\\' => array($baseDir . '/src'),
 );
