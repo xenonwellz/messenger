@@ -3,7 +3,9 @@
 return [
 
     // Always add toQuery if using collections
-    "allow_conversation_with" => \App\Models\User::all()->toQuery(),
+
+    //Uncomment after running your first migrate coment
+    //"allow_conversation_with" => \App\Models\User::all()->toQuery(),
 
     // Set to true to use avatar field in the user table
     "use_avatar_field" => false,

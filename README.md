@@ -36,13 +36,19 @@ Publish the assets by running
 
  `php artisan vendor:publish --tag=messenger-config`
 
+ After runing the 
+ `php artisan migrate`
+ command, uncomment the
+ `allow_conversation_with`
+ field in the config.
+
 
 ## Customization
 
 ### Config keys
 
 `allow_conversation_with`
-field allows you to specify specific users that can message each other it must return a query (collections will throw an error).
+field allows you to specify specific users that can message each other it must return a query (collections will throw an error). Uncomment after first migrate command
 
 `use_avatar_field`
  This should return either true or false if set to true it will use a column frrom the database as the path to the image that will serve as profile picture for each user.

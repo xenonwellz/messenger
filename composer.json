@@ -10,9 +10,10 @@
     }
   ],
   "minimum-stability": "dev",
+  "require": {},
   "autoload": {
     "psr-4": {
-      "Xenonwellz\\Messenger\\": "src/"
+      "Xenonwellz\\Messenger\\MessengerServiceProvider\\": "src/"
     }
   }
 }
