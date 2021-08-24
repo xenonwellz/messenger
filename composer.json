@@ -10,12 +10,6 @@
     }
   ],
   "minimum-stability": "dev",
-  "require": {
-    "php": "^7.3|^8.0",
-    "laravel/framework": "^8.40",
-    "laravel/tinker": "^2.5",
-    "laravel/ui": "^3.3"
-  },
   "autoload": {
     "psr-4": {
       "Xenonwellz\\Messenger\\": "src/"
