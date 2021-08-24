@@ -56,9 +56,9 @@ class MessengerServiceProvider extends ServiceProvider
         // Assets
         $this->publishes([
             // CSS
-            __DIR__ . '/assets/css' => public_path('css/messenger'),
+            __DIR__ . '/assets/css' => public_path('css/xmassets'),
             // JavaScript
-            __DIR__ . '/assets/js' => public_path('js/messenger'),
+            __DIR__ . '/assets/js' => public_path('js/xmassets'),
         ], 'messenger-assets');
     }
 
