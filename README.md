@@ -28,9 +28,13 @@
 
 ` composer require xenonwellz/messenger `
 
+Publish the assets by running 
+
+`php artisan vendor:publish --tag=messenger-assets`
+
  You can publish the config by entering the following command
 
- `publish code config goes here`
+ `php artisan vendor:publish --tag=messenger-config`
 
 
 ## Customization
@@ -63,8 +67,10 @@ field allows you to specify specific users that can message each other it must r
 ### Other customizations
 
 You can always customize anything you want by publishing it first. You can publish them by anything by running this command 
-`publish  command` 
-and change the tag based on what you want to publish. (i.e views to pubish views, migrations to publish migrations).
+
+`php artisan vendor:publish --tag=messenger-whatever` 
+
+and change the tag based on what you want to publish. (i.e messenger-views to pubish views, messenger-migrations to publish migrations).
 
 ## Conclusion
 You can always open issues if you find any bug or security issue. Thanks for using this package.
