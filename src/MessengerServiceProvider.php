@@ -25,9 +25,7 @@ class MessengerServiceProvider extends ServiceProvider
         $this->registerPolicies();
         $this->loadRoutes();
         $this->loadViewsFrom(__DIR__ . '/views', 'messenger');
-        $this->loadMigrationsFrom(__DIR__ . '/database/migrations/main');
-        $this->loadMigrationsFrom(__DIR__ . '/database/migrations/exception');
-        $this->loadMigrationsFrom(__DIR__ . '/database/migrations/exception');
+        $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
         $this->publishes([
             __DIR__ . '/config/messenger.php' => config_path('messenger.php')
         ], 'messenger-config');
